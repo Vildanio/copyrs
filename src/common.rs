@@ -41,6 +41,11 @@ impl<'a> Display for ClipboardContent<'a> {
 }
 
 impl<'a> ClipboardContent<'a> {
+    pub const EMPTY_TEXT: ClipboardContent<'static> = ClipboardContent::Text {
+        text: Cow::Borrowed(""),
+        kind: ClipboardTextKind::UTF8,
+    };
+
     /// Creates [`ClipboardContent::Text`] with
     /// the given `text` and [`ClipboardTextKind::UTF8`]
     pub fn from_plain_str(text: &'a str) -> Self {
