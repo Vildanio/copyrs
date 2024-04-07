@@ -24,7 +24,7 @@ impl Clipboard for WindowsClipboard {
         }
     }
 
-    fn get_content(&self) -> Result<Option<ClipboardContent>> {
+    fn get_content(&self) -> Result<ClipboardContent> {
         let mut string = String::new();
 
         self.get_string(&mut string)?;

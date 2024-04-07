@@ -6,7 +6,7 @@ pub trait Clipboard {
     fn set_content(&mut self, content: ClipboardContent) -> Result<()>;
 
     /// Gets the clipboard content.
-    fn get_content(&self) -> Result<Option<ClipboardContent>>;
+    fn get_content(&self) -> Result<ClipboardContent>;
 }
 
 /// Result of the [`Clipboard`] operations.

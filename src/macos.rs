@@ -47,7 +47,7 @@ impl Clipboard for OSXClipboardContext {
         }
     }
 
-    fn get_content(&self) -> Result<Option<ClipboardContent>> {
+    fn get_content(&self) -> Result<ClipboardContent> {
         autoreleasepool(|| unsafe {
             let types: *mut NSArray<*mut NSString> = msg_send![self.pasteboard, types];
             let has_file: BOOL = msg_send![types, containsObject: NSPasteboardTypeFileURL];

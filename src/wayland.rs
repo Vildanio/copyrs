@@ -13,9 +13,9 @@ impl Clipboard for WaylandClipboard {
         Err("Binary format not supported".into())
     }
 
-    fn get_content(&self) -> Result<Option<crate::ClipboardContent>> {
+    fn get_content(&self) -> Result<ClipboardContent> {
         let string = self.load()?;
 
-        Ok(Some(ClipboardContent::from_plain_string(string)))
+        Ok(ClipboardContent::from_plain_string(string))
     }
 }

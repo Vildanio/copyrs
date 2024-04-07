@@ -1,4 +1,4 @@
-use crate::{Clipboard, ClipboardContent};
+use crate::{Clipboard, ClipboardContent, Result};
 use std::time::Duration;
 
 pub use x11_clipboard::Clipboard as X11Clipboard;
@@ -14,7 +14,7 @@ impl Clipboard for X11Clipboard {
         )?)
     }
 
-    fn get_content(&self) -> crate::Result<Option<crate::ClipboardContent>> {
+    fn get_content(&self) -> Result<ClipboardContent> {
         let bytes = self.load(
             self.setter.atoms.clipboard,
             self.getter.atoms.utf8_string,
@@ -24,6 +24,6 @@ impl Clipboard for X11Clipboard {
 
         let string = String::from_utf8(bytes)?;
 
-        Ok(Some(ClipboardContent::from_plain_string(string)))
+        Ok(ClipboardContent::from_plain_string(string))
     }
 }
