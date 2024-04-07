@@ -10,8 +10,9 @@ Copyrs — is a rust library, which provides crossplatform API for system clipbo
     - Wayland
 
 **Please note that the library does not currently support:**
-- Linux's "primary" clipboard
-- Formats other than text (however it can be easily solved)
+- Linux's "primary" clipboard.
+- Formats other than text (however it can be easily solved).
+
 Additionally, the macOS and Windows implementations have not undergone thorough testing, and it's uncertain whether they compile successfully.
 
 ### Example
