@@ -30,8 +30,8 @@ pub enum ClipboardContent<'a> {
 impl<'a> Display for ClipboardContent<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ClipboardContent::Text { text, kind } => {
-                write!(f, "Text: {0}, Kind: {1}", text, kind)
+            ClipboardContent::Text { text, .. } => {
+                write!(f, "{0}", text)
             }
             ClipboardContent::Binary { kind, .. } => {
                 write!(f, "Binary, Kind: {0}", kind)
