@@ -13,6 +13,7 @@ pub trait Clipboard {
 pub type Result<T> = std::result::Result<T, Box<dyn Error>>;
 
 /// Possible content of the clipboard.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum ClipboardContent<'a> {
     /// Text.
     Text {
@@ -61,12 +62,14 @@ impl<'a> ClipboardContent<'a> {
 }
 
 /// Kind of [`ClipboardContent::Binary`] data.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum ClipboardBinaryKind {
     /// The data is a bitmap.
     Image,
 }
 
 /// Kind of [`ClipboardContent::Text`] data.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum ClipboardTextKind {
     /// The data is utf-8 encoded plain text.
     UTF8,
