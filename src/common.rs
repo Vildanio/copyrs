@@ -1,4 +1,4 @@
-use std::{borrow::Cow, error::Error};
+use std::{borrow::Cow, error::Error, fmt::Display};
 
 /// Provides access to the system clipboard.
 pub trait Clipboard {
@@ -25,6 +25,19 @@ pub enum ClipboardContent<'a> {
         data: Cow<'a, [u8]>,
         kind: ClipboardBinaryKind,
     },
+}
+
+impl<'a> Display for ClipboardContent<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ClipboardContent::Text { text, kind } => {
+                write!(f, "Text: {0}, Kind: {1}", text, kind)
+            }
+            ClipboardContent::Binary { kind, .. } => {
+                write!(f, "Binary, Kind: {0}", kind)
+            }
+        }
+    }
 }
 
 impl<'a> ClipboardContent<'a> {
@@ -68,9 +81,25 @@ pub enum ClipboardBinaryKind {
     Image,
 }
 
+impl Display for ClipboardBinaryKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ClipboardBinaryKind::Image => write!(f, "Image"),
+        }
+    }
+}
+
 /// Kind of [`ClipboardContent::Text`] data.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum ClipboardTextKind {
     /// The data is utf-8 encoded plain text.
     UTF8,
+}
+
+impl Display for ClipboardTextKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ClipboardTextKind::UTF8 => write!(f, "UTF8"),
+        }
+    }
 }
