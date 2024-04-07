@@ -1,9 +1,13 @@
 [package]
 name = "copyrs"
-description = "Crossplatform clipboard access"
-keywords = ["clipboard"]
 version = "0.1.0"
 edition = "2021"
+
+license = "MIT"
+readme = "README.md"
+keywords = ["clipboard"]
+description = "Crossplatform clipboard access"
+repository = "https://github.com/Vildanio/copyrs"
 
 [features]
 default = ["x11", "wayland"]
