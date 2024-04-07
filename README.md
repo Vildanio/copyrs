@@ -1,10 +1,10 @@
 # Copyrs
 
-Copyrs — is a rust library, which provides crossplatform API for system clipboard.
+Copyrs — is a tiny rust library, which provides crossplatform API for system clipboard.
 
 **It provides implementation for:**
-- Windows
-- Macos
+- ~~Windows~~
+- ~~Macos~~
 - Linux
     - X11
     - Wayland
@@ -12,8 +12,6 @@ Copyrs — is a rust library, which provides crossplatform API for system clipbo
 **Please note that the library does not currently support:**
 - Linux's "primary" clipboard.
 - Formats other than text (however it can be easily solved).
-
-Additionally, the macOS and Windows implementations have not undergone thorough testing, and it's uncertain whether they compile successfully.
 
 ### Example
 
