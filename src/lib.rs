@@ -1,3 +1,19 @@
+#[cfg(target_os = "windows")]
+#[path = "platform/windows.rs"]
+mod platform;
+
+#[cfg(target_os = "macos")]
+#[path = "platform/macos.rs"]
+mod platform;
+
+#[cfg(target_os = "ios")]
+#[path = "platform/ios.rs"]
+mod platform;
+
+#[cfg(target_os = "android")]
+#[path = "platform/android.rs"]
+mod platform;
+
 #[cfg(all(
     unix,
     not(any(
@@ -10,6 +26,7 @@
 #[cfg(feature = "wayland")]
 #[path = "platform/wayland.rs"]
 mod platform;
+
 #[cfg(all(
     unix,
     not(any(
@@ -22,6 +39,7 @@ mod platform;
 #[cfg(all(feature = "x11", not(feature = "wayland")))]
 #[path = "platform/x11.rs"]
 mod platform;
+
 #[cfg(not(any(
     all(
         unix,
