@@ -1,7 +1,7 @@
-use copyrs::{x11::X11Clipboard, Clipboard, ClipboardContent};
+use copyrs::{clipboard, Clipboard, ClipboardContent};
 
 fn main() {
-    let mut clipboard = X11Clipboard::new().unwrap();
+    let mut clipboard = clipboard().unwrap();
 
     let content = ClipboardContent::from_plain_str("Hello, world!");
 

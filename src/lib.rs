@@ -1,5 +1,3 @@
-mod common;
-pub use common::*;
 #[cfg(all(
     unix,
     not(any(
@@ -10,33 +8,8 @@ pub use common::*;
     ))
 ))]
 #[cfg(feature = "wayland")]
-pub mod wayland;
-#[cfg(all(
-    unix,
-    not(any(
-        target_os = "macos",
-        target_os = "android",
-        target_os = "ios",
-        target_os = "emscripten"
-    ))
-))]
-#[cfg(feature = "x11")]
-pub mod x11;
-
-#[cfg(all(
-    unix,
-    not(any(
-        target_os = "macos",
-        target_os = "android",
-        target_os = "ios",
-        target_os = "emscripten"
-    ))
-))]
-#[cfg(feature = "wayland")]
-pub fn clipboard() -> impl Clipboard {
-    wayland::WaylandClipboard
-}
-
+#[path = "platform/wayland.rs"]
+mod platform;
 #[cfg(all(
     unix,
     not(any(
@@ -47,6 +20,9 @@ pub fn clipboard() -> impl Clipboard {
     ))
 ))]
 #[cfg(all(feature = "x11", not(feature = "wayland")))]
-pub fn clipboard() -> Result<impl Clipboard> {
-    x11::X11Clipboard::new().map_err(Into::into)
-}
+#[path = "platform/x11.rs"]
+mod platform;
+
+pub use platform::*;
+mod common;
+pub use common::*;

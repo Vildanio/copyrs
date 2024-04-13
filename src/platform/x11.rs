@@ -1,10 +1,14 @@
 use crate::{Clipboard, ClipboardContent, Result};
 use std::time::Duration;
 
+pub fn clipboard() -> Result<impl Clipboard> {
+    X11Clipboard::new().map_err(Into::into)
+}
+
 pub use x11_clipboard::Clipboard as X11Clipboard;
 
 impl Clipboard for X11Clipboard {
-    fn set_content(&mut self, content: crate::ClipboardContent) -> crate::Result<()> {
+    fn set_content(&mut self, content: ClipboardContent) -> Result<()> {
         let bytes = content.get_bytes();
 
         Ok(self.store(

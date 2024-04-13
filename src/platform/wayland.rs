@@ -8,6 +8,10 @@ use wl_clipboard_rs::{
 
 use crate::{Clipboard, ClipboardContent, Result};
 
+pub fn clipboard() -> Result<impl Clipboard> {
+    Ok(WaylandClipboard)
+}
+
 pub struct WaylandClipboard;
 
 impl Clipboard for WaylandClipboard {

@@ -2,11 +2,11 @@ use std::{borrow::Cow, error::Error, fmt::Display};
 
 /// Provides access to the system clipboard.
 pub trait Clipboard {
-    /// Sets the clipboard content.
-    fn set_content(&mut self, content: ClipboardContent) -> Result<()>;
-
     /// Gets the clipboard content.
     fn get_content(&self) -> Result<ClipboardContent>;
+
+    /// Sets the clipboard content.
+    fn set_content(&mut self, content: ClipboardContent) -> Result<()>;
 }
 
 /// Result of the [`Clipboard`] operations.
