@@ -3,11 +3,13 @@
 Copyrs — is a tiny rust library, which provides crossplatform API for system clipboard.
 
 **It provides implementation for:**
-- ~~Windows~~
-- ~~Macos~~
+- Windows
 - Linux
     - X11
     - Wayland
+- ~~IOS~~
+- ~~Macos~~
+- ~~Android~~
 
 **Please note that the library does not currently support:**
 - Linux's "primary" clipboard.
