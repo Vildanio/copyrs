@@ -16,6 +16,7 @@ mod platform;
 
 #[cfg(all(
     unix,
+    any(feature = "x11", feature = "wayland"),
     not(any(
         target_os = "macos",
         target_os = "android",
@@ -29,6 +30,7 @@ mod platform;
 #[cfg(not(any(
     all(
         unix,
+        any(feature = "x11", feature = "wayland"),
         not(any(
             target_os = "macos",
             target_os = "ios",
