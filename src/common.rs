@@ -108,3 +108,14 @@ impl Display for ClipboardTextKind {
         }
     }
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct NotImplementedError;
+
+impl Display for NotImplementedError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Method not implemented")
+    }
+}
+
+impl Error for NotImplementedError {}
