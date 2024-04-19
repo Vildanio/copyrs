@@ -1,5 +1,10 @@
 #[cfg(any(feature = "x11", feature = "wayland"))]
-use crate::{Clipboard, ClipboardContent, Result};
+use crate::{Clipboard, ClipboardContent, ClipboardContentKind, Result};
+#[cfg(any(feature = "x11", feature = "wayland"))]
+use std::borrow::Cow;
+
+#[cfg(feature = "x11")]
+use crate::NotSupportedError;
 #[cfg(feature = "x11")]
 use std::time::Duration;
 
@@ -18,15 +23,7 @@ pub use x11_clipboard::Clipboard as X11Clipboard;
 
 #[cfg(feature = "x11")]
 impl Clipboard for X11Clipboard {
-    fn set_content(&mut self, content: ClipboardContent) -> Result<()> {
-        let bytes = content.get_bytes();
-
-        Ok(self.store(
-            self.setter.atoms.clipboard,
-            self.setter.atoms.utf8_string,
-            bytes,
-        )?)
-    }
+    // Supports only utf-8 strings
 
     fn get_content(&self) -> Result<ClipboardContent> {
         let bytes = self.load(
@@ -38,7 +35,16 @@ impl Clipboard for X11Clipboard {
 
         let string = String::from_utf8(bytes)?;
 
-        Ok(ClipboardContent::from_plain_string(string))
+        Ok(string.into())
+    }
+
+    fn set_content(&mut self, data: Cow<[u8]>, kind: ClipboardContentKind) -> Result<()> {
+        if let ClipboardContentKind::Text = kind {
+            self.store(self.setter.atoms.clipboard, self.setter.atoms.incr, data)
+                .map_err(Into::into)
+        } else {
+            Err(Box::new(NotSupportedError))
+        }
     }
 }
 
@@ -66,9 +72,8 @@ pub struct WaylandClipboard;
 
 #[cfg(feature = "wayland")]
 impl Clipboard for WaylandClipboard {
-    fn set_content(&mut self, content: crate::ClipboardContent) -> Result<()> {
-        if let ClipboardContent::Text { text, .. } = content {
-            let bytes = text.as_bytes();
+    fn set_content(&mut self, data: Cow<[u8]>, kind: ClipboardContentKind) -> Result<()> {
+        if let ClipboardContentKind::Text = kind {
             let mut options = Options::new();
 
             options
@@ -78,7 +83,7 @@ impl Clipboard for WaylandClipboard {
                 .serve_requests(ServeRequests::Unlimited);
 
             options
-                .copy(copy::Source::Bytes(bytes.into()), copy::MimeType::Text)
+                .copy(copy::Source::Bytes(data.into()), copy::MimeType::Text)
                 .map_err(Into::into)
         } else {
             Err("Binary format not supported".into())
@@ -94,7 +99,7 @@ impl Clipboard for WaylandClipboard {
             Ok((reader, _)) => reader,
             Err(
                 paste::Error::NoSeats | paste::Error::ClipboardEmpty | paste::Error::NoMimeType,
-            ) => return Ok(ClipboardContent::EMPTY_TEXT),
+            ) => return Ok(ClipboardContent::from_string(String::new())),
             Err(e) => return Err(e.into()),
         };
 
@@ -102,6 +107,6 @@ impl Clipboard for WaylandClipboard {
 
         reader.read_to_string(&mut string).map_err(Box::new)?;
 
-        Ok(ClipboardContent::from_plain_string(string))
+        Ok(string.into())
     }
 }

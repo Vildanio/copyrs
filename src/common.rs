@@ -6,106 +6,55 @@ pub trait Clipboard {
     fn get_content(&self) -> Result<ClipboardContent>;
 
     /// Sets the clipboard content.
-    fn set_content(&mut self, content: ClipboardContent) -> Result<()>;
+    fn set_content(&mut self, data: Cow<[u8]>, kind: ClipboardContentKind) -> Result<()>;
 }
 
 /// Result of the [`Clipboard`] operations.
 pub type Result<T> = std::result::Result<T, Box<dyn Error>>;
 
-/// Possible content of the clipboard.
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub enum ClipboardContent<'a> {
-    /// Text.
-    Text {
-        text: Cow<'a, str>,
-        kind: ClipboardTextKind,
-    },
-    /// Binary data.
-    Binary {
-        data: Cow<'a, [u8]>,
-        kind: ClipboardBinaryKind,
-    },
-}
-
-impl<'a> Display for ClipboardContent<'a> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ClipboardContent::Text { text, .. } => {
-                write!(f, "{0}", text)
-            }
-            ClipboardContent::Binary { kind, .. } => {
-                write!(f, "Binary, Kind: {0}", kind)
-            }
-        }
-    }
-}
-
-impl<'a> ClipboardContent<'a> {
-    pub const EMPTY_TEXT: ClipboardContent<'static> = ClipboardContent::Text {
-        text: Cow::Borrowed(""),
-        kind: ClipboardTextKind::UTF8,
-    };
-
-    /// Creates [`ClipboardContent::Text`] with
-    /// the given `text` and [`ClipboardTextKind::UTF8`]
-    pub fn from_plain_str(text: &'a str) -> Self {
-        ClipboardContent::Text {
-            text: Cow::Borrowed(text),
-            kind: ClipboardTextKind::UTF8,
-        }
-    }
-
-    /// Creates [`ClipboardContent::Text`] with
-    /// the given `text` and [`ClipboardTextKind::UTF8`]
-    pub fn from_plain_string(text: String) -> Self {
-        ClipboardContent::Text {
-            text: Cow::Owned(text),
-            kind: ClipboardTextKind::UTF8,
-        }
-    }
-
-    /// Returns content as bytes.
-    pub fn get_bytes(&self) -> &[u8] {
-        match self {
-            ClipboardContent::Text { text, .. } => match text {
-                Cow::Borrowed(str) => str.as_bytes(),
-                Cow::Owned(string) => string.as_bytes(),
-            },
-            ClipboardContent::Binary { data, .. } => match data {
-                Cow::Borrowed(data) => data,
-                Cow::Owned(data) => data,
-            },
-        }
-    }
-}
-
-/// Kind of [`ClipboardContent::Binary`] data.
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub enum ClipboardBinaryKind {
-    /// The data is a bitmap.
+/// Possible kinds of content, that
+/// can be stored in clipboard.
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+pub enum ClipboardContentKind {
+    /// UTF-8 encoded text.
+    Text,
+    /// Bitmap.
     Image,
 }
 
-impl Display for ClipboardBinaryKind {
+/// Possible content of the clipboard.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub struct ClipboardContent {
+    // This should be valid utf-8 string
+    // if kind is ClipboardContentKind::Text
+    pub data: Vec<u8>,
+    pub kind: ClipboardContentKind,
+}
+
+impl ClipboardContent {
+    pub fn new(data: Vec<u8>, kind: ClipboardContentKind) -> Self {
+        Self { data, kind }
+    }
+
+    pub fn from_string(string: String) -> Self {
+        Self::new(string.into_bytes(), ClipboardContentKind::Text)
+    }
+}
+
+impl Display for ClipboardContent {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ClipboardBinaryKind::Image => write!(f, "Image"),
+        match self.kind {
+            ClipboardContentKind::Text => {
+                write!(f, "{0}", std::str::from_utf8(&self.data).unwrap())
+            }
+            ClipboardContentKind::Image => write!(f, "image"),
         }
     }
 }
 
-/// Kind of [`ClipboardContent::Text`] data.
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub enum ClipboardTextKind {
-    /// The data is utf-8 encoded plain text.
-    UTF8,
-}
-
-impl Display for ClipboardTextKind {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ClipboardTextKind::UTF8 => write!(f, "UTF8"),
-        }
+impl From<String> for ClipboardContent {
+    fn from(value: String) -> Self {
+        Self::from_string(value)
     }
 }
 
@@ -114,8 +63,19 @@ pub struct NotImplementedError;
 
 impl Display for NotImplementedError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Method not implemented")
+        write!(f, "Operation is not implemented")
     }
 }
 
 impl Error for NotImplementedError {}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct NotSupportedError;
+
+impl Display for NotSupportedError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Operation is not supported")
+    }
+}
+
+impl Error for NotSupportedError {}
